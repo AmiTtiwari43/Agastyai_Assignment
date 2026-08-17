@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reliable Webhook Delivery Service | Control Center</title>
+    <title>Reliable Webhook Delivery Service | Control Center & Tutorial</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,6 +67,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .brand {
@@ -112,7 +114,8 @@
         .header-controls {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .tenant-selector {
@@ -129,6 +132,7 @@
             font-size: 0.8rem;
             color: var(--text-muted);
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .tenant-selector input {
@@ -138,7 +142,7 @@
             font-family: var(--font-mono);
             font-size: 0.85rem;
             font-weight: 600;
-            width: 140px;
+            width: 130px;
             outline: none;
         }
 
@@ -173,7 +177,7 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
             color: var(--text-muted);
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: var(--radius-md);
             font-size: 0.8rem;
             font-weight: 500;
@@ -190,12 +194,41 @@
             border-color: var(--primary);
         }
 
+        /* Quick Interactive Banner */
+        .tutorial-banner {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .tutorial-banner-text h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tutorial-banner-text p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
         /* Main Container */
         main {
             max-width: 1360px;
             width: 100%;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem 2rem 3rem;
             flex: 1;
         }
 
@@ -204,7 +237,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 1.25rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.75rem;
         }
 
         .stat-card {
@@ -253,6 +286,7 @@
             margin-bottom: 1.5rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 12px;
+            overflow-x: auto;
         }
 
         .tab-btn {
@@ -260,15 +294,16 @@
             border: none;
             color: var(--text-muted);
             font-family: var(--font-sans);
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 600;
-            padding: 8px 18px;
+            padding: 8px 16px;
             border-radius: var(--radius-md);
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 8px;
+            white-space: nowrap;
         }
 
         .tab-btn:hover {
@@ -325,6 +360,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .card-title {
@@ -350,9 +387,15 @@
         }
 
         .form-group label {
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             font-weight: 600;
             color: var(--text-muted);
+        }
+
+        .form-hint {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 2px;
         }
 
         .input-field, .select-field, .textarea-field {
@@ -421,6 +464,25 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: white;
+            padding: 9px 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            filter: brightness(1.1);
+        }
+
         /* Tables & Lists */
         .table-responsive {
             overflow-x: auto;
@@ -444,12 +506,14 @@
             font-size: 0.72rem;
             letter-spacing: 0.05em;
             border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
         }
 
         td {
             padding: 12px 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             color: var(--text-main);
+            vertical-align: middle;
         }
 
         tr:hover td {
@@ -467,6 +531,7 @@
             font-weight: 700;
             font-family: var(--font-mono);
             letter-spacing: 0.02em;
+            white-space: nowrap;
         }
 
         .status-PENDING {
@@ -502,6 +567,131 @@
             padding: 2px 6px;
             font-size: 0.72rem;
             font-family: var(--font-mono);
+        }
+
+        /* Tutorial Guide Cards */
+        .guide-step-card {
+            background: rgba(18, 24, 38, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .guide-step-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-2px);
+        }
+
+        .guide-step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .guide-step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .guide-step-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .guide-step-body {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: rgba(10, 14, 23, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: #e2e8f0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .code-tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .code-tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Flow Diagram Container */
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(10, 14, 23, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            gap: 12px;
+        }
+
+        .flow-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            text-align: center;
+            min-width: 160px;
+        }
+
+        .flow-node-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .flow-node-desc {
+            font-size: 0.72rem;
+            color: var(--accent-cyan);
+        }
+
+        .flow-arrow {
+            color: var(--text-dim);
+            font-size: 1.25rem;
+            font-weight: bold;
         }
 
         /* Toast Notifications */
@@ -559,7 +749,7 @@
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             width: 90%;
-            max-width: 600px;
+            max-width: 650px;
             padding: 1.75rem;
             display: flex;
             flex-direction: column;
@@ -580,14 +770,14 @@
             </div>
             <div class="brand-text">
                 <h1>Webhook Delivery Engine</h1>
-                <span>Enterprise At-Least-Once Delivery</span>
+                <span>Enterprise Event Delivery & Retry System</span>
             </div>
         </div>
 
         <div class="header-controls">
-            <div class="tenant-selector" title="Switch tenant context header (X-Tenant-Id)">
-                <label for="tenantInput">Tenant ID:</label>
-                <input type="text" id="tenantInput" value="tenant-alpha" onchange="onTenantChanged()">
+            <div class="tenant-selector" title="Company / Tenant workspace (X-Tenant-Id header)">
+                <label for="tenantInput">Company / Workspace:</label>
+                <input type="text" id="tenantInput" value="acme-corp" onchange="onTenantChanged()" placeholder="acme-corp">
             </div>
 
             <div class="badge-pulse" id="healthIndicator">
@@ -602,7 +792,7 @@
 
             <a href="/actuator/prometheus" target="_blank" class="nav-link-btn" id="metricsLink">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                Prometheus
+                Metrics
             </a>
         </div>
     </header>
@@ -610,41 +800,62 @@
     <!-- Main Container -->
     <main>
 
+        <!-- Quick Interactive Demo Banner -->
+        <div class="tutorial-banner">
+            <div class="tutorial-banner-text">
+                <h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                    New here? Test the full webhook flow in 1-Click!
+                </h2>
+                <p>Registers a test receiver endpoint, dispatches a sample payment event, and opens live delivery tracking with zero setup.</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn-success" onclick="runOneClickDemo()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    Run 1-Click Demo
+                </button>
+                <button class="btn-secondary" onclick="switchTab('tutorial')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    Step-by-Step Guide
+                </button>
+            </div>
+        </div>
+
         <!-- Stats Counter Overview -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-header">
-                    <span>Active Endpoints</span>
+                    <span>Active Webhook Receivers</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                 </div>
                 <div class="stat-value" id="statsEndpointsCount">0</div>
-                <div class="stat-footer">Configured for current tenant</div>
+                <div class="stat-footer">Subscribers configured for workspace</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <span>Delivered Webhooks</span>
+                    <span>Successful Deliveries</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
                 <div class="stat-value" id="statsDeliveredCount" style="color: var(--accent-emerald);">0</div>
-                <div class="stat-footer">HTTP 2xx confirmed deliveries</div>
+                <div class="stat-footer">HTTP 2xx verified deliveries</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <span>Dead-Lettered Webhooks</span>
+                    <span>Failed Webhooks (Dead-Letter)</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
                 </div>
                 <div class="stat-value" id="statsDeadLetterCount" style="color: var(--accent-rose);">0</div>
-                <div class="stat-footer">Max retry exhausted (eligible for redrive)</div>
+                <div class="stat-footer">Exhausted 8 retries · Eligible for Redrive</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-header">
-                    <span>Concurrency Worker</span>
+                    <span>Delivery Worker Engine</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                 </div>
-                <div class="stat-value" style="color: var(--accent-cyan);">Virtual</div>
+                <div class="stat-value" style="color: var(--accent-cyan);">Virtual Threads</div>
                 <div class="stat-footer">Postgres FOR UPDATE SKIP LOCKED</div>
             </div>
         </div>
@@ -653,15 +864,19 @@
         <div class="tabs-nav">
             <button class="tab-btn active" id="tabDeliveriesBtn" onclick="switchTab('deliveries')">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                Live Deliveries & Redrive
+                Delivery Tracker & History
             </button>
             <button class="tab-btn" id="tabIngestBtn" onclick="switchTab('ingest')">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                Dispatch / Ingest Event
+                Send Test Event (Publisher)
             </button>
             <button class="tab-btn" id="tabEndpointsBtn" onclick="switchTab('endpoints')">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                Webhook Endpoints
+                Webhook Receivers (Subscribers)
+            </button>
+            <button class="tab-btn" id="tabTutorialBtn" onclick="switchTab('tutorial')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                Interactive Tutorial & Guide
             </button>
         </div>
 
@@ -671,7 +886,7 @@
                 <div class="card-header">
                     <div class="card-title">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                        Webhook Delivery Queue & Attempt Log
+                        Live Webhook Delivery Queue & Attempt Log
                     </div>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn-secondary" id="btnRefreshDeliveries" onclick="loadDeliveries()">
@@ -686,12 +901,12 @@
                         <thead>
                             <tr>
                                 <th>Delivery ID</th>
-                                <th>Event Type</th>
-                                <th>Status</th>
-                                <th>Attempts</th>
+                                <th>Event Name / Topic</th>
+                                <th>Delivery Status</th>
+                                <th>Attempts (Max 8)</th>
                                 <th>Last Response</th>
-                                <th>Next Retry</th>
-                                <th>Created</th>
+                                <th>Next Scheduled Retry</th>
+                                <th>Created At</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -711,25 +926,27 @@
                 <div class="card">
                     <div class="card-title">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                        Ingest New Webhook Event
+                        Publish Test Webhook Event
                     </div>
 
                     <form id="ingestEventForm" onsubmit="handleIngestEvent(event)">
                         <div class="form-group">
-                            <label for="eventExternalId">Idempotency External Event ID:</label>
+                            <label for="eventExternalId">Event Tracking ID (Idempotency Key):</label>
                             <div style="display: flex; gap: 8px;">
                                 <input type="text" id="eventExternalId" class="input-field" required placeholder="e.g. evt_order_987654">
                                 <button type="button" class="btn-secondary" onclick="generateIdempotencyKey()">Auto UUID</button>
                             </div>
+                            <div class="form-hint">Prevents duplicate deliveries if the same event is submitted multiple times.</div>
                         </div>
 
                         <div class="form-group" style="margin-top: 1rem;">
-                            <label for="eventType">Event Type (Topic):</label>
-                            <input type="text" id="eventType" class="input-field" required value="payment.completed" placeholder="e.g. payment.completed, user.created">
+                            <label for="eventType">Event Name / Topic:</label>
+                            <input type="text" id="eventType" class="input-field" required value="payment.completed" placeholder="e.g. payment.completed, order.created">
+                            <div class="form-hint">Matches subscribed receivers listening for this event name.</div>
                         </div>
 
                         <div class="form-group" style="margin-top: 1rem;">
-                            <label for="eventPayload">JSON Payload Data:</label>
+                            <label for="eventPayload">Event Payload (JSON Data to Send):</label>
                             <textarea id="eventPayload" class="textarea-field" required>{
   "orderId": "ORD-2026-9901",
   "amount": 149.99,
@@ -744,7 +961,7 @@
                         <div style="margin-top: 1.5rem;">
                             <button type="submit" class="btn-primary" id="btnSubmitEvent" style="width: 100%;">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                                Ingest & Fan-Out to Subscribed Endpoints
+                                Publish & Fan-Out to Subscribed Receivers
                             </button>
                         </div>
                     </form>
@@ -753,16 +970,17 @@
                 <div class="card">
                     <div class="card-title">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        Fan-Out & Idempotency Guarantee
+                        Delivery & Reliability Guarantees
                     </div>
                     <div style="font-size: 0.85rem; line-height: 1.6; color: var(--text-muted);">
                         <p style="margin-bottom: 0.75rem;">
-                            When you submit an event with <code style="color:var(--accent-cyan); font-family:var(--font-mono);">(X-Tenant-Id, event_id_external)</code>:
+                            When you publish an event under <code style="color:var(--accent-cyan); font-family:var(--font-mono);">(Company, Event ID)</code>:
                         </p>
-                        <ul style="padding-left: 1.25rem; margin-bottom: 1rem; display:flex; flex-direction:column; gap:6px;">
-                            <li><strong>Atomic Fan-Out:</strong> The event is saved and fanned out to all matching active subscriber endpoints into pending deliveries.</li>
-                            <li><strong>Strict Idempotency:</strong> Duplicate event IDs return the original event without generating duplicate webhook dispatches.</li>
-                            <li><strong>HMAC Signature:</strong> Outgoing HTTP requests carry <code style="color:var(--accent-amber); font-family:var(--font-mono);">X-Webhook-Signature</code> (SHA-256) and <code style="color:var(--accent-amber); font-family:var(--font-mono);">X-Webhook-Timestamp</code>.</li>
+                        <ul style="padding-left: 1.25rem; margin-bottom: 1rem; display:flex; flex-direction:column; gap:8px;">
+                            <li><strong>Atomic Fan-Out:</strong> The event is saved and instantly split into individual delivery records for every matching webhook receiver.</li>
+                            <li><strong>Idempotency:</strong> Submitting the same event ID twice returns the existing event without duplicate outbound calls.</li>
+                            <li><strong>HMAC-SHA256 Signing:</strong> Outbound requests include <code style="color:var(--accent-amber); font-family:var(--font-mono);">X-Webhook-Signature</code> and <code style="color:var(--accent-amber); font-family:var(--font-mono);">X-Webhook-Timestamp</code>.</li>
+                            <li><strong>Automatic Retries:</strong> Up to 8 attempts with exponential backoff and jitter if the destination server is down.</li>
                         </ul>
                         <div id="ingestResultBox" style="display: none; background: rgba(10, 14, 23, 0.8); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; font-family: var(--font-mono); font-size: 0.8rem; overflow-x: auto;">
                         </div>
@@ -778,23 +996,26 @@
                 <div class="card">
                     <div class="card-title">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-                        Register Webhook Endpoint
+                        Add Webhook Receiver (Subscriber)
                     </div>
 
                     <form id="registerEndpointForm" onsubmit="handleRegisterEndpoint(event)">
                         <div class="form-group">
-                            <label for="endpointUrl">Destination URL:</label>
-                            <input type="url" id="endpointUrl" class="input-field" required placeholder="https://webhook.site/your-uuid or https://example.com/hook">
+                            <label for="endpointUrl">Receiver Webhook URL (Target HTTP/S endpoint):</label>
+                            <input type="url" id="endpointUrl" class="input-field" required placeholder="https://httpbin.org/post or https://webhook.site/your-id">
+                            <div class="form-hint">Where notifications will be sent (SSRF protected).</div>
                         </div>
 
                         <div class="form-group" style="margin-top: 1rem;">
-                            <label for="eventTypes">Subscribed Event Types (comma-separated):</label>
-                            <input type="text" id="eventTypes" class="input-field" required value="payment.completed, order.created" placeholder="e.g. payment.completed, user.signup">
+                            <label for="eventTypes">Events to Listen For (comma-separated):</label>
+                            <input type="text" id="eventTypes" class="input-field" required value="payment.completed, order.created" placeholder="e.g. payment.completed, order.created">
+                            <div class="form-hint">Only matching event names will be delivered to this URL.</div>
                         </div>
 
                         <div style="margin-top: 1.5rem;">
                             <button type="submit" class="btn-primary" id="btnRegisterEndpoint" style="width: 100%;">
-                                Register Endpoint
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                                Add Webhook Receiver
                             </button>
                         </div>
                     </form>
@@ -805,7 +1026,7 @@
                     <div class="card-header">
                         <div class="card-title">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
-                            Registered Endpoints for Tenant
+                            Registered Webhook Receivers
                         </div>
                         <button class="btn-secondary" onclick="loadEndpoints()">Refresh</button>
                     </div>
@@ -814,19 +1035,122 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>URL</th>
+                                    <th>Receiver URL</th>
                                     <th>Subscribed Events</th>
-                                    <th>Secret</th>
+                                    <th>HMAC Secret</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="endpointsTableBody">
                                 <tr>
-                                    <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 2rem;">No endpoints registered yet.</td>
+                                    <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 2rem;">No receivers registered yet.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: Interactive Tutorial & Guide -->
+        <section id="panel-tutorial" class="tab-panel">
+            <!-- Visual Flow Diagram -->
+            <div class="flow-diagram">
+                <div class="flow-node">
+                    <div class="flow-node-title">1. Your Application</div>
+                    <div class="flow-node-desc">Publishes Event</div>
+                </div>
+                <div class="flow-arrow">➔</div>
+                <div class="flow-node" style="border-color: var(--primary);">
+                    <div class="flow-node-title">2. Ingest & Fan-Out</div>
+                    <div class="flow-node-desc">Idempotency Checked</div>
+                </div>
+                <div class="flow-arrow">➔</div>
+                <div class="flow-node" style="border-color: var(--accent-cyan);">
+                    <div class="flow-node-title">3. Delivery Engine</div>
+                    <div class="flow-node-desc">Virtual Threads + DB Lock</div>
+                </div>
+                <div class="flow-arrow">➔</div>
+                <div class="flow-node" style="border-color: var(--accent-emerald);">
+                    <div class="flow-node-title">4. Receiver Server</div>
+                    <div class="flow-node-desc">HMAC Signed (HTTP 2xx)</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <!-- Step 1 -->
+                <div class="guide-step-card">
+                    <div class="guide-step-header">
+                        <div class="guide-step-number">1</div>
+                        <div class="guide-step-title">Choose Company / Workspace</div>
+                    </div>
+                    <div class="guide-step-body">
+                        Multi-tenancy guarantees that each company's webhook receivers, HMAC secrets, and delivery history are completely isolated from all other companies.
+                    </div>
+                    <button class="btn-secondary" onclick="setTenant('acme-corp')">Set Workspace to: acme-corp</button>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="guide-step-card">
+                    <div class="guide-step-header">
+                        <div class="guide-step-number">2</div>
+                        <div class="guide-step-title">Register Webhook Receiver</div>
+                    </div>
+                    <div class="guide-step-body">
+                        Provide the destination URL where your customer or external service expects HTTP notifications, and select the event topics they want to receive.
+                    </div>
+                    <button class="btn-secondary" onclick="quickRegisterTestEndpoint()">Add Test Receiver (httpbin.org)</button>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="guide-step-card">
+                    <div class="guide-step-header">
+                        <div class="guide-step-number">3</div>
+                        <div class="guide-step-title">Publish Event & Fan-Out</div>
+                    </div>
+                    <div class="guide-step-body">
+                        Your backend calls <code style="color:var(--accent-cyan); font-family:var(--font-mono);">POST /api/v1/events</code>. The service saves the event, verifies idempotency, and queues delivery.
+                    </div>
+                    <button class="btn-secondary" onclick="quickPublishTestEvent()">Send Test Payment Event</button>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="guide-step-card">
+                    <div class="guide-step-header">
+                        <div class="guide-step-number">4</div>
+                        <div class="guide-step-title">Monitor & Manual Redrive</div>
+                    </div>
+                    <div class="guide-step-body">
+                        View real-time delivery status. If a customer's server was down and exhausted all 8 retry attempts, simply click <strong>"Retry Now"</strong> to redrive the delivery.
+                    </div>
+                    <button class="btn-secondary" onclick="switchTab('deliveries')">Open Delivery Tracker</button>
+                </div>
+            </div>
+
+            <!-- Signature Verification Guide -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        How Webhook Receivers Verify HMAC-SHA256 Signatures
+                    </div>
+                    <div class="code-tabs">
+                        <button class="code-tab-btn active" onclick="showCodeSnippet('python')">Python</button>
+                        <button class="code-tab-btn" onclick="showCodeSnippet('nodejs')">Node.js</button>
+                        <button class="code-tab-btn" onclick="showCodeSnippet('java')">Java</button>
+                        <button class="code-tab-btn" onclick="showCodeSnippet('curl')">cURL</button>
+                    </div>
+                </div>
+
+                <div id="codeSnippetBox" class="code-block">
+                    <pre id="codeSnippetContent"><code># Python Example: Verifying HMAC-SHA256 Webhook Signature
+import hmac, hashlib
+
+def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str) -> bool:
+    # Expected signature format: 'sha256=<hex_digest>'
+    expected_sig = "sha256=" + hmac.new(secret.encode('utf-8'), raw_payload_bytes, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(signature_header, expected_sig)
+</code></pre>
                 </div>
             </div>
         </section>
@@ -837,7 +1161,7 @@
     <div id="detailsModal" class="modal-backdrop" onclick="closeModal()">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="card-header">
-                <div class="card-title" id="modalTitle">Delivery Details</div>
+                <div class="card-title" id="modalTitle">Delivery Attempt Details</div>
                 <button class="btn-secondary" onclick="closeModal()">✕</button>
             </div>
             <div id="modalBody" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-main); word-break: break-all; max-height: 400px; overflow-y: auto;">
@@ -850,7 +1174,7 @@
 
     <script>
         // State
-        let currentTenant = localStorage.getItem('tenant_id') || 'tenant-alpha';
+        let currentTenant = localStorage.getItem('tenant_id') || 'acme-corp';
         document.getElementById('tenantInput').value = currentTenant;
 
         // Init
@@ -868,12 +1192,17 @@
             };
         }
 
+        function setTenant(tenantName) {
+            document.getElementById('tenantInput').value = tenantName;
+            onTenantChanged();
+        }
+
         function onTenantChanged() {
             const val = document.getElementById('tenantInput').value.trim();
             if (val) {
                 currentTenant = val;
                 localStorage.setItem('tenant_id', currentTenant);
-                showToast(`Switched tenant context to: ${currentTenant}`, 'success');
+                showToast(`Switched workspace context to: ${currentTenant}`, 'success');
                 loadAll();
             }
         }
@@ -893,11 +1222,14 @@
                 document.getElementById('tabEndpointsBtn').classList.add('active');
                 document.getElementById('panel-endpoints').classList.add('active');
                 loadEndpoints();
+            } else if (tabId === 'tutorial') {
+                document.getElementById('tabTutorialBtn').classList.add('active');
+                document.getElementById('panel-tutorial').classList.add('active');
             }
         }
 
         function generateIdempotencyKey() {
-            const uuid = 'evt_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+            const uuid = 'evt_' + Math.random().toString(36).substring(2, 8) + '_' + Date.now().toString(36);
             document.getElementById('eventExternalId').value = uuid;
         }
 
@@ -940,13 +1272,13 @@
                 const tbody = document.getElementById('endpointsTableBody');
                 
                 if (endpoints.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 2rem;">No endpoints registered for ${currentTenant}.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 2rem;">No receivers registered for ${currentTenant}. Click "Add Webhook Receiver" above.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = endpoints.map(ep => `
                     <tr>
-                        <td style="font-family: var(--font-mono); font-size: 0.8rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        <td style="font-family: var(--font-mono); font-size: 0.8rem; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                             <span title="${ep.url}">${ep.url}</span>
                         </td>
                         <td>
@@ -955,13 +1287,13 @@
                             </div>
                         </td>
                         <td>
-                            <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-dim);">
-                                ${ep.secret ? ep.secret.substring(0, 8) + '...' : '••••••••'}
+                            <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--accent-amber);" title="${ep.secret}">
+                                ${ep.secret ? ep.secret.substring(0, 10) + '...' : '••••••••'}
                             </span>
                         </td>
                         <td>
                             <button class="btn-secondary" style="padding: 4px 8px; font-size: 0.75rem; color: var(--accent-rose);" onclick="deleteEndpoint('${ep.id}')">
-                                Delete
+                                Deactivate
                             </button>
                         </td>
                     </tr>
@@ -989,7 +1321,7 @@
                 }
 
                 const created = await res.json();
-                showToast(`Endpoint registered with generated HMAC secret!`, 'success');
+                showToast(`Webhook receiver added with HMAC secret!`, 'success');
                 document.getElementById('endpointUrl').value = '';
                 loadEndpoints();
             } catch (err) {
@@ -998,14 +1330,14 @@
         }
 
         async function deleteEndpoint(id) {
-            if (!confirm('Are you sure you want to deactivate this endpoint?')) return;
+            if (!confirm('Are you sure you want to deactivate this webhook receiver?')) return;
             try {
                 const res = await fetch(`/api/v1/endpoints/${id}`, {
                     method: 'DELETE',
                     headers: getHeaders()
                 });
                 if (!res.ok) throw new Error('Failed to delete');
-                showToast('Endpoint deactivated', 'success');
+                showToast('Receiver deactivated', 'success');
                 loadEndpoints();
             } catch (err) {
                 showToast(err.message, 'error');
@@ -1037,7 +1369,7 @@
                 if (!res.ok) throw new Error(data.message || 'Ingest failed');
 
                 const statusTxt = res.status === 201 ? 'Fanned out to subscriber deliveries' : 'Idempotent duplicate recognized';
-                showToast(`Event ingested! (${statusTxt})`, 'success');
+                showToast(`Event published! (${statusTxt})`, 'success');
 
                 const resultBox = document.getElementById('ingestResultBox');
                 resultBox.style.display = 'block';
@@ -1050,96 +1382,107 @@
             }
         }
 
-        // 3. Deliveries API
+        // 3. Deliveries & Redrive API
         async function loadDeliveries() {
             try {
-                // First get endpoints to fetch their deliveries
                 const epRes = await fetch('/api/v1/endpoints', { headers: getHeaders() });
                 if (!epRes.ok) return;
                 const endpoints = await epRes.json();
-
+                
                 let allDeliveries = [];
+                let deliveredCount = 0;
+                let deadLetterCount = 0;
+
                 for (const ep of endpoints) {
-                    const dRes = await fetch(`/api/v1/endpoints/${ep.id}/deliveries?page=0&size=20`, { headers: getHeaders() });
+                    const dRes = await fetch(`/api/v1/endpoints/${ep.id}/deliveries?size=50`, { headers: getHeaders() });
                     if (dRes.ok) {
-                        const page = await dRes.json();
-                        if (page.content) allDeliveries.push(...page.content);
+                        const dPage = await dRes.json();
+                        const items = dPage.content || [];
+                        items.forEach(item => {
+                            if (item.status === 'DELIVERED') deliveredCount++;
+                            if (item.status === 'DEAD_LETTERED') deadLetterCount++;
+                        });
+                        allDeliveries = allDeliveries.concat(items);
                     }
                 }
 
-                // Update counters
-                const deliveredCount = allDeliveries.filter(d => d.status === 'DELIVERED').length;
-                const deadLetterCount = allDeliveries.filter(d => d.status === 'DEAD_LETTERED').length;
                 document.getElementById('statsDeliveredCount').innerText = deliveredCount;
                 document.getElementById('statsDeadLetterCount').innerText = deadLetterCount;
 
+                // Sort by created date descending
+                allDeliveries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
                 const tbody = document.getElementById('deliveriesTableBody');
                 if (allDeliveries.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 2rem;">No deliveries recorded yet. Go to "Dispatch / Ingest Event" to trigger webhooks.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 2rem;">No webhook deliveries in queue for ${currentTenant}. Publish an event to start!</td></tr>`;
                     return;
                 }
 
-                // Sort by createdAt desc
-                allDeliveries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                tbody.innerHTML = allDeliveries.map(d => {
+                    const statusClass = `status-${d.status}`;
+                    const createdDate = new Date(d.createdAt).toLocaleTimeString();
+                    const nextRetry = d.nextAttemptAt ? new Date(d.nextAttemptAt).toLocaleTimeString() : '—';
+                    const responseCode = d.lastResponseCode ? `<span style="font-family:var(--font-mono); font-weight:600; color:${d.lastResponseCode < 300 ? 'var(--accent-emerald)' : 'var(--accent-rose)'};">${d.lastResponseCode}</span>` : '<span style="color:var(--text-dim);">—</span>';
 
-                tbody.innerHTML = allDeliveries.map(d => `
-                    <tr>
-                        <td style="font-family: var(--font-mono); font-size: 0.78rem;">
-                            <a href="#" onclick="showDeliveryDetails('${d.id}', '${d.status}', ${d.lastResponseCode || 'null'}, '${escapeHtml(d.lastResponseSnippet || '')}'); return false;" style="color: var(--accent-cyan); text-decoration: none;">
-                                ${d.id.substring(0, 8)}...
-                            </a>
-                        </td>
-                        <td><span class="tag-chip">${d.eventType || 'event'}</span></td>
-                        <td><span class="status-badge status-${d.status}">${d.status}</span></td>
-                        <td style="font-family: var(--font-mono);">${d.attemptCount || 0}/8</td>
-                        <td style="font-family: var(--font-mono);">
-                            ${d.lastResponseCode ? `<span style="color: ${d.lastResponseCode >= 200 && d.lastResponseCode < 300 ? 'var(--accent-emerald)' : 'var(--accent-rose)'}; font-weight: 600;">${d.lastResponseCode}</span>` : '<span style="color: var(--text-dim);">-</span>'}
-                        </td>
-                        <td style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
-                            ${d.nextAttemptAt ? formatTime(d.nextAttemptAt) : '-'}
-                        </td>
-                        <td style="font-size: 0.75rem; color: var(--text-dim);">
-                            ${formatTime(d.createdAt)}
-                        </td>
-                        <td>
-                            ${d.status === 'DEAD_LETTERED' ? `
-                                <button class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: var(--accent-amber); border-color: rgba(245,158,11,0.4);" onclick="redriveDelivery('${d.id}')">
-                                    Redrive
-                                </button>
-                            ` : '-'}
-                        </td>
-                    </tr>
-                `).join('');
+                    return `
+                        <tr>
+                            <td style="font-family: var(--font-mono); font-size: 0.78rem;">
+                                <a href="javascript:void(0)" style="color:var(--accent-cyan); text-decoration:none;" onclick="viewDeliveryDetails('${d.id}', '${d.status}', '${d.attemptCount}', '${d.lastResponseCode || ''}', '${escapeHtml(d.lastResponseSnippet || '')}')">
+                                    ${d.id.substring(0, 8)}...
+                                </a>
+                            </td>
+                            <td><span class="tag-chip">${d.eventType || 'event'}</span></td>
+                            <td><span class="status-badge ${statusClass}">${d.status}</span></td>
+                            <td style="font-family: var(--font-mono); font-size: 0.82rem;">${d.attemptCount} / 8</td>
+                            <td>${responseCode}</td>
+                            <td style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">${nextRetry}</td>
+                            <td style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim);">${createdDate}</td>
+                            <td>
+                                ${d.status === 'DEAD_LETTERED' ? `
+                                    <button class="btn-secondary" style="padding: 4px 8px; font-size: 0.75rem; color: var(--accent-amber);" onclick="redriveDelivery('${d.id}')">
+                                        Retry Now
+                                    </button>
+                                ` : `
+                                    <button class="btn-secondary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="viewDeliveryDetails('${d.id}', '${d.status}', '${d.attemptCount}', '${d.lastResponseCode || ''}', '${escapeHtml(d.lastResponseSnippet || '')}')">
+                                        Inspect
+                                    </button>
+                                `}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
             } catch (e) {
                 console.error(e);
             }
         }
 
-        async function redriveDelivery(deliveryId) {
+        async function redriveDelivery(id) {
             try {
-                const res = await fetch(`/api/v1/deliveries/${deliveryId}/redrive`, {
+                const res = await fetch(`/api/v1/deliveries/${id}/redrive`, {
                     method: 'POST',
                     headers: getHeaders()
                 });
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.message || 'Redrive failed');
-                }
-                showToast('Delivery reset to PENDING and scheduled for immediate dispatch!', 'success');
+                if (!res.ok) throw new Error('Redrive failed');
+                showToast('Delivery re-queued for immediate retry!', 'success');
                 loadDeliveries();
             } catch (err) {
-                showToast(`Redrive failed: ${err.message}`, 'error');
+                showToast(`Redrive error: ${err.message}`, 'error');
             }
         }
 
-        function showDeliveryDetails(id, status, code, snippet) {
-            document.getElementById('modalTitle').innerText = `Delivery ${id}`;
+        function viewDeliveryDetails(id, status, attempts, code, snippet) {
+            document.getElementById('modalTitle').innerText = `Delivery ${id.substring(0, 8)}`;
             document.getElementById('modalBody').innerHTML = `
                 <div style="display:flex; flex-direction:column; gap:10px;">
-                    <div><strong>Status:</strong> <span class="status-badge status-${status}">${status}</span></div>
-                    <div><strong>HTTP Status Code:</strong> ${code || 'N/A'}</div>
-                    <div><strong>Response Snippet:</strong></div>
-                    <pre style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; overflow-x: auto;">${snippet || '(No response received yet)'}</pre>
+                    <div><strong>Full Delivery ID:</strong> ${id}</div>
+                    <div><strong>Current Status:</strong> <span class="status-badge status-${status}">${status}</span></div>
+                    <div><strong>Attempt Count:</strong> ${attempts} / 8 max attempts</div>
+                    <div><strong>Last HTTP Response Code:</strong> ${code || 'None yet'}</div>
+                    <div style="margin-top: 8px;">
+                        <strong>Last Response Body / Error Snippet:</strong>
+                        <pre style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; margin-top: 4px; overflow-x: auto; color: var(--text-muted); font-size: 0.75rem;">${snippet || 'No snippet available'}</pre>
+                    </div>
                 </div>
             `;
             document.getElementById('detailsModal').classList.add('active');
@@ -1149,14 +1492,133 @@
             document.getElementById('detailsModal').classList.remove('active');
         }
 
-        function formatTime(isoStr) {
-            if (!isoStr) return '-';
-            const d = new Date(isoStr);
-            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        }
-
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Quick helper actions for interactive guide
+        async function quickRegisterTestEndpoint() {
+            try {
+                const res = await fetch('/api/v1/endpoints', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        url: 'https://httpbin.org/post',
+                        subscribedEventTypes: ['payment.completed', 'order.created']
+                    })
+                });
+                if (res.ok) {
+                    showToast('Registered test receiver (https://httpbin.org/post)!', 'success');
+                    switchTab('endpoints');
+                } else {
+                    const err = await res.json();
+                    showToast(err.message || 'Registration failed', 'error');
+                }
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+
+        async function quickPublishTestEvent() {
+            try {
+                const eventId = 'evt_' + Math.random().toString(36).substring(2, 8);
+                const res = await fetch('/api/v1/events', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        eventId: eventId,
+                        type: 'payment.completed',
+                        payload: { orderId: 'ORD-' + Math.floor(1000 + Math.random() * 9000), amount: 99.50, currency: 'USD' }
+                    })
+                });
+                if (res.ok) {
+                    showToast('Sample payment event published!', 'success');
+                    switchTab('deliveries');
+                } else {
+                    showToast('Event publish failed', 'error');
+                }
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+
+        async function runOneClickDemo() {
+            showToast('🚀 Running 1-Click Interactive Demo...', 'success');
+            // 1. Ensure receiver exists
+            await fetch('/api/v1/endpoints', {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({
+                    url: 'https://httpbin.org/post',
+                    subscribedEventTypes: ['payment.completed', 'order.created']
+                })
+            }).catch(() => {});
+
+            // 2. Ingest event
+            const eventId = 'demo_' + Date.now().toString(36);
+            await fetch('/api/v1/events', {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({
+                    eventId: eventId,
+                    type: 'payment.completed',
+                    payload: { orderId: 'DEMO-8822', amount: 199.00, customer: 'Jane Doe', status: 'PAID' }
+                })
+            });
+
+            // 3. Switch to deliveries
+            setTimeout(() => {
+                switchTab('deliveries');
+                showToast('Event delivered and recorded in Live Tracker!', 'success');
+            }, 600);
+        }
+
+        // Code snippet switching
+        const codeSnippets = {
+            python: `# Python Example: Verifying HMAC-SHA256 Webhook Signature
+import hmac, hashlib
+
+def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str) -> bool:
+    # Header format: 'sha256=<hex_digest>'
+    expected_sig = "sha256=" + hmac.new(secret.encode('utf-8'), raw_payload_bytes, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(signature_header, expected_sig)`,
+
+            nodejs: `// Node.js Express Example: Verifying HMAC-SHA256 Webhook Signature
+const crypto = require('crypto');
+
+function verifyWebhook(rawBodyBuffer, signatureHeader, secret) {
+    const expectedSig = 'sha256=' + crypto.createHmac('sha256', secret).update(rawBodyBuffer).digest('hex');
+    return crypto.timingSafeEqual(Buffer.from(signatureHeader), Buffer.from(expectedSig));
+}`,
+
+            java: `// Java Example: Verifying HMAC-SHA256 Webhook Signature
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.MessageDigest;
+import java.util.HexFormat;
+
+public boolean verifyWebhook(byte[] rawBody, String signatureHeader, String secret) throws Exception {
+    Mac mac = Mac.getInstance("HmacSHA256");
+    mac.init(new SecretKeySpec(secret.getBytes(), "HmacSHA256"));
+    String expected = "sha256=" + HexFormat.of().formatHex(mac.doFinal(rawBody));
+    return MessageDigest.isEqual(signatureHeader.getBytes(), expected.getBytes());
+}`,
+
+            curl: `# cURL: Publish an Event to the Webhook Engine
+curl -X POST http://localhost:8080/api/v1/events \\
+  -H "Content-Type: application/json" \\
+  -H "X-Tenant-Id: acme-corp" \\
+  -d '{
+    "eventId": "evt_order_123",
+    "type": "payment.completed",
+    "payload": { "orderId": "ORD-123", "amount": 99.99 }
+  }'`
+        };
+
+        function showCodeSnippet(lang) {
+            document.querySelectorAll('.code-tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('codeSnippetContent').innerHTML = `<code>${escapeHtml(codeSnippets[lang] || '')}</code>`;
         }
     </script>
 </body>
