@@ -60,9 +60,9 @@ public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
      */
     @Query("SELECT d FROM Delivery d " +
             "WHERE d.tenantId = :tenantId AND d.endpoint.id = :endpointId " +
-            "AND (:status IS NULL OR d.status = :status) " +
-            "AND (:fromDate IS NULL OR d.createdAt >= :fromDate) " +
-            "AND (:toDate IS NULL OR d.createdAt <= :toDate) " +
+            "AND (cast(:status as String) IS NULL OR d.status = :status) " +
+            "AND (cast(:fromDate as instant) IS NULL OR d.createdAt >= :fromDate) " +
+            "AND (cast(:toDate as instant) IS NULL OR d.createdAt <= :toDate) " +
             "ORDER BY d.createdAt DESC")
     Page<Delivery> findEndpointDeliveriesFiltered(
             @Param("tenantId") String tenantId,

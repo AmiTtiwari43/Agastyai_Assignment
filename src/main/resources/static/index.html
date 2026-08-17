@@ -951,7 +951,7 @@
                         </td>
                         <td>
                             <div style="display:flex; flex-wrap:wrap; gap:4px;">
-                                ${ep.eventTypes.map(t => `<span class="tag-chip">${t}</span>`).join('')}
+                                ${(ep.subscribedEventTypes || []).map(t => `<span class="tag-chip">${t}</span>`).join('')}
                             </div>
                         </td>
                         <td>
@@ -980,7 +980,7 @@
                 const res = await fetch('/api/v1/endpoints', {
                     method: 'POST',
                     headers: getHeaders(),
-                    body: JSON.stringify({ url, eventTypes })
+                    body: JSON.stringify({ url, subscribedEventTypes: eventTypes })
                 });
 
                 if (!res.ok) {
@@ -1030,7 +1030,7 @@
                 const res = await fetch('/api/v1/events', {
                     method: 'POST',
                     headers: getHeaders(),
-                    body: JSON.stringify({ eventIdExternal, eventType, payload })
+                    body: JSON.stringify({ eventId: eventIdExternal, type: eventType, payload })
                 });
 
                 const data = await res.json();
