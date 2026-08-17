@@ -1,0 +1,42 @@
+# Reference documentation files (user prompt constraint)
+SPEC.md
+00-OVERVIEW.md
+ARCHITECTURE.md
+CHECKLIST.md
+GIT_WORKFLOW.md
+MASTER_PROMPT.md
+NOTES.md
+
+# Compiled class & build artifacts
+target/
+build/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# IDE & Editor files
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+*.ipr
+*.iws
+
+# Environment variables & secrets (Automatic-fail guardrail)
+.env
+*.env.local
+*.secret
+*.pem
+*.key
+
+# Logs & temp files
+*.log
+logs/
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
