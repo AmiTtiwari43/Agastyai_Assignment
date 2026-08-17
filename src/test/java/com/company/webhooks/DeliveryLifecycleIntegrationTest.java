@@ -14,6 +14,7 @@ import com.company.webhooks.event.EventRepository;
 import com.company.webhooks.event.dto.EventResponse;
 import com.company.webhooks.event.dto.IngestEventRequest;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
