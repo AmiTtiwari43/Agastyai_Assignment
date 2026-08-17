@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reliable Webhook Delivery Service | Control Center</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0a0e17;
+            --bg-surface: rgba(18, 24, 38, 0.7);
+            --bg-card: rgba(23, 32, 54, 0.6);
+            --bg-card-hover: rgba(30, 41, 68, 0.75);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(99, 102, 241, 0.3);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Top Navigation Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(10, 14, 23, 0.85);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .brand-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .brand-text h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text span {
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .tenant-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-surface);
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .tenant-selector label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .tenant-selector input {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 140px;
+            outline: none;
+        }
+
+        .badge-pulse {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-weight: 600;
+        }
+
+        .badge-pulse .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-emerald);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-emerald);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        .nav-link-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1360px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-glow);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: #fff;
+            font-family: var(--font-mono);
+        }
+
+        .stat-footer {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        /* Tab Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: var(--primary);
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        /* Panels */
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.25s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glassmorphic Cards & Grid Layouts */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 960px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--accent-cyan);
+        }
+
+        /* Forms & Inputs */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .input-field, .select-field, .textarea-field {
+            background: rgba(10, 14, 23, 0.75);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            font-family: var(--font-sans);
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .textarea-field {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .input-field:focus, .select-field:focus, .textarea-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Tables & Lists */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(10, 14, 23, 0.8);
+            color: var(--text-muted);
+            padding: 12px 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            letter-spacing: 0.02em;
+        }
+
+        .status-PENDING {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-amber);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-IN_PROGRESS {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .status-DELIVERED {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-DEAD_LETTERED {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--accent-rose);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        /* Tag / Chip */
+        .tag-chip {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: rgba(18, 24, 38, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success { border-color: var(--accent-emerald); }
+        .toast.error { border-color: var(--accent-rose); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Modal */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #111827;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 600px;
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Header -->
+    <header>
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <h1>Webhook Delivery Engine</h1>
+                <span>Enterprise At-Least-Once Delivery</span>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <div class="tenant-selector" title="Switch tenant context header (X-Tenant-Id)">
+                <label for="tenantInput">Tenant ID:</label>
+                <input type="text" id="tenantInput" value="tenant-alpha" onchange="onTenantChanged()">
+            </div>
+
+            <div class="badge-pulse" id="healthIndicator">
+                <span class="dot"></span>
+                <span id="healthText">Service Healthy</span>
+            </div>
+
+            <a href="/swagger-ui/index.html" target="_blank" class="nav-link-btn" id="swaggerLink">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Swagger API
+            </a>
+
+            <a href="/actuator/prometheus" target="_blank" class="nav-link-btn" id="metricsLink">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                Prometheus
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main>
+
+        <!-- Stats Counter Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span>Active Endpoints</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </div>
+                <div class="stat-value" id="statsEndpointsCount">0</div>
+                <div class="stat-footer">Configured for current tenant</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span>Delivered Webhooks</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="stat-value" id="statsDeliveredCount" style="color: var(--accent-emerald);">0</div>
+                <div class="stat-footer">HTTP 2xx confirmed deliveries</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span>Dead-Lettered Webhooks</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                </div>
+                <div class="stat-value" id="statsDeadLetterCount" style="color: var(--accent-rose);">0</div>
+                <div class="stat-footer">Max retry exhausted (eligible for redrive)</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span>Concurrency Worker</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                </div>
+                <div class="stat-value" style="color: var(--accent-cyan);">Virtual</div>
+                <div class="stat-footer">Postgres FOR UPDATE SKIP LOCKED</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" id="tabDeliveriesBtn" onclick="switchTab('deliveries')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                Live Deliveries & Redrive
+            </button>
+            <button class="tab-btn" id="tabIngestBtn" onclick="switchTab('ingest')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                Dispatch / Ingest Event
+            </button>
+            <button class="tab-btn" id="tabEndpointsBtn" onclick="switchTab('endpoints')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                Webhook Endpoints
+            </button>
+        </div>
+
+        <!-- TAB 1: Deliveries & Redrive Monitor -->
+        <section id="panel-deliveries" class="tab-panel active">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        Webhook Delivery Queue & Attempt Log
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-secondary" id="btnRefreshDeliveries" onclick="loadDeliveries()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Delivery ID</th>
+                                <th>Event Type</th>
+                                <th>Status</th>
+                                <th>Attempts</th>
+                                <th>Last Response</th>
+                                <th>Next Retry</th>
+                                <th>Created</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deliveriesTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; color: var(--text-dim); padding: 2rem;">Loading deliveries...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: Dispatch / Ingest Event -->
+        <section id="panel-ingest" class="tab-panel">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        Ingest New Webhook Event
+                    </div>
+
+                    <form id="ingestEventForm" onsubmit="handleIngestEvent(event)">
+                        <div class="form-group">
+                            <label for="eventExternalId">Idempotency External Event ID:</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="eventExternalId" class="input-field" required placeholder="e.g. evt_order_987654">
+                                <button type="button" class="btn-secondary" onclick="generateIdempotencyKey()">Auto UUID</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 1rem;">
+                            <label for="eventType">Event Type (Topic):</label>
+                            <input type="text" id="eventType" class="input-field" required value="payment.completed" placeholder="e.g. payment.completed, user.created">
+                        </div>
+
+                        <div class="form-group" style="margin-top: 1rem;">
+                            <label for="eventPayload">JSON Payload Data:</label>
+                            <textarea id="eventPayload" class="textarea-field" required>{
+  "orderId": "ORD-2026-9901",
+  "amount": 149.99,
+  "currency": "USD",
+  "customer": {
+    "name": "Alex Mercer",
+    "email": "alex@example.com"
+  }
+}</textarea>
+                        </div>
+
+                        <div style="margin-top: 1.5rem;">
+                            <button type="submit" class="btn-primary" id="btnSubmitEvent" style="width: 100%;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                Ingest & Fan-Out to Subscribed Endpoints
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        Fan-Out & Idempotency Guarantee
+                    </div>
+                    <div style="font-size: 0.85rem; line-height: 1.6; color: var(--text-muted);">
+                        <p style="margin-bottom: 0.75rem;">
+                            When you submit an event with <code style="color:var(--accent-cyan); font-family:var(--font-mono);">(X-Tenant-Id, event_id_external)</code>:
+                        </p>
+                        <ul style="padding-left: 1.25rem; margin-bottom: 1rem; display:flex; flex-direction:column; gap:6px;">
+                            <li><strong>Atomic Fan-Out:</strong> The event is saved and fanned out to all matching active subscriber endpoints into pending deliveries.</li>
+                            <li><strong>Strict Idempotency:</strong> Duplicate event IDs return the original event without generating duplicate webhook dispatches.</li>
+                            <li><strong>HMAC Signature:</strong> Outgoing HTTP requests carry <code style="color:var(--accent-amber); font-family:var(--font-mono);">X-Webhook-Signature</code> (SHA-256) and <code style="color:var(--accent-amber); font-family:var(--font-mono);">X-Webhook-Timestamp</code>.</li>
+                        </ul>
+                        <div id="ingestResultBox" style="display: none; background: rgba(10, 14, 23, 0.8); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; font-family: var(--font-mono); font-size: 0.8rem; overflow-x: auto;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: Webhook Endpoints -->
+        <section id="panel-endpoints" class="tab-panel">
+            <div class="dashboard-grid">
+                <!-- Endpoint Registration Form -->
+                <div class="card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                        Register Webhook Endpoint
+                    </div>
+
+                    <form id="registerEndpointForm" onsubmit="handleRegisterEndpoint(event)">
+                        <div class="form-group">
+                            <label for="endpointUrl">Destination URL:</label>
+                            <input type="url" id="endpointUrl" class="input-field" required placeholder="https://webhook.site/your-uuid or https://example.com/hook">
+                        </div>
+
+                        <div class="form-group" style="margin-top: 1rem;">
+                            <label for="eventTypes">Subscribed Event Types (comma-separated):</label>
+                            <input type="text" id="eventTypes" class="input-field" required value="payment.completed, order.created" placeholder="e.g. payment.completed, user.signup">
+                        </div>
+
+                        <div style="margin-top: 1.5rem;">
+                            <button type="submit" class="btn-primary" id="btnRegisterEndpoint" style="width: 100%;">
+                                Register Endpoint
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Existing Endpoints List -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                            Registered Endpoints for Tenant
+                        </div>
+                        <button class="btn-secondary" onclick="loadEndpoints()">Refresh</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>URL</th>
+                                    <th>Subscribed Events</th>
+                                    <th>Secret</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="endpointsTableBody">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 2rem;">No endpoints registered yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Details / Snippet Modal -->
+    <div id="detailsModal" class="modal-backdrop" onclick="closeModal()">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="card-header">
+                <div class="card-title" id="modalTitle">Delivery Details</div>
+                <button class="btn-secondary" onclick="closeModal()">✕</button>
+            </div>
+            <div id="modalBody" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-main); word-break: break-all; max-height: 400px; overflow-y: auto;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // State
+        let currentTenant = localStorage.getItem('tenant_id') || 'tenant-alpha';
+        document.getElementById('tenantInput').value = currentTenant;
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            generateIdempotencyKey();
+            loadAll();
+            setInterval(loadDeliveries, 3000); // Auto-refresh deliveries every 3s
+            checkHealth();
+        });
+
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'X-Tenant-Id': currentTenant
+            };
+        }
+
+        function onTenantChanged() {
+            const val = document.getElementById('tenantInput').value.trim();
+            if (val) {
+                currentTenant = val;
+                localStorage.setItem('tenant_id', currentTenant);
+                showToast(`Switched tenant context to: ${currentTenant}`, 'success');
+                loadAll();
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+            if (tabId === 'deliveries') {
+                document.getElementById('tabDeliveriesBtn').classList.add('active');
+                document.getElementById('panel-deliveries').classList.add('active');
+                loadDeliveries();
+            } else if (tabId === 'ingest') {
+                document.getElementById('tabIngestBtn').classList.add('active');
+                document.getElementById('panel-ingest').classList.add('active');
+            } else if (tabId === 'endpoints') {
+                document.getElementById('tabEndpointsBtn').classList.add('active');
+                document.getElementById('panel-endpoints').classList.add('active');
+                loadEndpoints();
+            }
+        }
+
+        function generateIdempotencyKey() {
+            const uuid = 'evt_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+            document.getElementById('eventExternalId').value = uuid;
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3500);
+        }
+
+        async function checkHealth() {
+            try {
+                const res = await fetch('/actuator/health');
+                const data = await res.json();
+                if (data.status === 'UP') {
+                    document.getElementById('healthIndicator').style.display = 'flex';
+                }
+            } catch (e) {
+                console.log('Health check offline');
+            }
+        }
+
+        function loadAll() {
+            loadEndpoints();
+            loadDeliveries();
+        }
+
+        // 1. Endpoints API
+        async function loadEndpoints() {
+            try {
+                const res = await fetch('/api/v1/endpoints', { headers: getHeaders() });
+                if (!res.ok) throw new Error('Failed to load endpoints');
+                const endpoints = await res.json();
+                
+                document.getElementById('statsEndpointsCount').innerText = endpoints.length;
+                const tbody = document.getElementById('endpointsTableBody');
+                
+                if (endpoints.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 2rem;">No endpoints registered for ${currentTenant}.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = endpoints.map(ep => `
+                    <tr>
+                        <td style="font-family: var(--font-mono); font-size: 0.8rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <span title="${ep.url}">${ep.url}</span>
+                        </td>
+                        <td>
+                            <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                                ${ep.eventTypes.map(t => `<span class="tag-chip">${t}</span>`).join('')}
+                            </div>
+                        </td>
+                        <td>
+                            <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-dim);">
+                                ${ep.secret ? ep.secret.substring(0, 8) + '...' : '••••••••'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-secondary" style="padding: 4px 8px; font-size: 0.75rem; color: var(--accent-rose);" onclick="deleteEndpoint('${ep.id}')">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function handleRegisterEndpoint(e) {
+            e.preventDefault();
+            const url = document.getElementById('endpointUrl').value.trim();
+            const eventTypes = document.getElementById('eventTypes').value.split(',').map(s => s.trim()).filter(Boolean);
+
+            try {
+                const res = await fetch('/api/v1/endpoints', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ url, eventTypes })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || 'Validation error');
+                }
+
+                const created = await res.json();
+                showToast(`Endpoint registered with generated HMAC secret!`, 'success');
+                document.getElementById('endpointUrl').value = '';
+                loadEndpoints();
+            } catch (err) {
+                showToast(`Error: ${err.message}`, 'error');
+            }
+        }
+
+        async function deleteEndpoint(id) {
+            if (!confirm('Are you sure you want to deactivate this endpoint?')) return;
+            try {
+                const res = await fetch(`/api/v1/endpoints/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+                if (!res.ok) throw new Error('Failed to delete');
+                showToast('Endpoint deactivated', 'success');
+                loadEndpoints();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // 2. Ingest Event API
+        async function handleIngestEvent(e) {
+            e.preventDefault();
+            const eventIdExternal = document.getElementById('eventExternalId').value.trim();
+            const eventType = document.getElementById('eventType').value.trim();
+            let payload;
+
+            try {
+                payload = JSON.parse(document.getElementById('eventPayload').value);
+            } catch (err) {
+                showToast('Invalid JSON in payload field', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/v1/events', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ eventIdExternal, eventType, payload })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Ingest failed');
+
+                const statusTxt = res.status === 201 ? 'Fanned out to subscriber deliveries' : 'Idempotent duplicate recognized';
+                showToast(`Event ingested! (${statusTxt})`, 'success');
+
+                const resultBox = document.getElementById('ingestResultBox');
+                resultBox.style.display = 'block';
+                resultBox.innerHTML = `<strong>Response (${res.status} ${res.statusText}):</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+
+                generateIdempotencyKey();
+                loadDeliveries();
+            } catch (err) {
+                showToast(`Error: ${err.message}`, 'error');
+            }
+        }
+
+        // 3. Deliveries API
+        async function loadDeliveries() {
+            try {
+                // First get endpoints to fetch their deliveries
+                const epRes = await fetch('/api/v1/endpoints', { headers: getHeaders() });
+                if (!epRes.ok) return;
+                const endpoints = await epRes.json();
+
+                let allDeliveries = [];
+                for (const ep of endpoints) {
+                    const dRes = await fetch(`/api/v1/endpoints/${ep.id}/deliveries?page=0&size=20`, { headers: getHeaders() });
+                    if (dRes.ok) {
+                        const page = await dRes.json();
+                        if (page.content) allDeliveries.push(...page.content);
+                    }
+                }
+
+                // Update counters
+                const deliveredCount = allDeliveries.filter(d => d.status === 'DELIVERED').length;
+                const deadLetterCount = allDeliveries.filter(d => d.status === 'DEAD_LETTERED').length;
+                document.getElementById('statsDeliveredCount').innerText = deliveredCount;
+                document.getElementById('statsDeadLetterCount').innerText = deadLetterCount;
+
+                const tbody = document.getElementById('deliveriesTableBody');
+                if (allDeliveries.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 2rem;">No deliveries recorded yet. Go to "Dispatch / Ingest Event" to trigger webhooks.</td></tr>`;
+                    return;
+                }
+
+                // Sort by createdAt desc
+                allDeliveries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                tbody.innerHTML = allDeliveries.map(d => `
+                    <tr>
+                        <td style="font-family: var(--font-mono); font-size: 0.78rem;">
+                            <a href="#" onclick="showDeliveryDetails('${d.id}', '${d.status}', ${d.lastResponseCode || 'null'}, '${escapeHtml(d.lastResponseSnippet || '')}'); return false;" style="color: var(--accent-cyan); text-decoration: none;">
+                                ${d.id.substring(0, 8)}...
+                            </a>
+                        </td>
+                        <td><span class="tag-chip">${d.eventType || 'event'}</span></td>
+                        <td><span class="status-badge status-${d.status}">${d.status}</span></td>
+                        <td style="font-family: var(--font-mono);">${d.attemptCount || 0}/8</td>
+                        <td style="font-family: var(--font-mono);">
+                            ${d.lastResponseCode ? `<span style="color: ${d.lastResponseCode >= 200 && d.lastResponseCode < 300 ? 'var(--accent-emerald)' : 'var(--accent-rose)'}; font-weight: 600;">${d.lastResponseCode}</span>` : '<span style="color: var(--text-dim);">-</span>'}
+                        </td>
+                        <td style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
+                            ${d.nextAttemptAt ? formatTime(d.nextAttemptAt) : '-'}
+                        </td>
+                        <td style="font-size: 0.75rem; color: var(--text-dim);">
+                            ${formatTime(d.createdAt)}
+                        </td>
+                        <td>
+                            ${d.status === 'DEAD_LETTERED' ? `
+                                <button class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; color: var(--accent-amber); border-color: rgba(245,158,11,0.4);" onclick="redriveDelivery('${d.id}')">
+                                    Redrive
+                                </button>
+                            ` : '-'}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function redriveDelivery(deliveryId) {
+            try {
+                const res = await fetch(`/api/v1/deliveries/${deliveryId}/redrive`, {
+                    method: 'POST',
+                    headers: getHeaders()
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || 'Redrive failed');
+                }
+                showToast('Delivery reset to PENDING and scheduled for immediate dispatch!', 'success');
+                loadDeliveries();
+            } catch (err) {
+                showToast(`Redrive failed: ${err.message}`, 'error');
+            }
+        }
+
+        function showDeliveryDetails(id, status, code, snippet) {
+            document.getElementById('modalTitle').innerText = `Delivery ${id}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div><strong>Status:</strong> <span class="status-badge status-${status}">${status}</span></div>
+                    <div><strong>HTTP Status Code:</strong> ${code || 'N/A'}</div>
+                    <div><strong>Response Snippet:</strong></div>
+                    <pre style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; overflow-x: auto;">${snippet || '(No response received yet)'}</pre>
+                </div>
+            `;
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('detailsModal').classList.remove('active');
+        }
+
+        function formatTime(isoStr) {
+            if (!isoStr) return '-';
+            const d = new Date(isoStr);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
