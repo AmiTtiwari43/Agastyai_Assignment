@@ -18,6 +18,10 @@ public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
 
     Optional<Delivery> findByIdAndTenantId(UUID id, String tenantId);
 
+    List<Delivery> findByTenantId(String tenantId);
+
+    List<Delivery> findByEventId(UUID eventId);
+
     List<Delivery> findByEventIdAndTenantIdOrderByCreatedAtAsc(UUID eventId, String tenantId);
 
     int countByEventIdAndTenantId(UUID eventId, String tenantId);
