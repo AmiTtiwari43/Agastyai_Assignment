@@ -16,6 +16,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
         this.tenantInterceptor = tenantInterceptor;
     }
 
+    @org.springframework.context.annotation.Bean
+    public org.springframework.web.filter.CorsFilter corsFilter() {
+        org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
+        config.addAllowedOriginPattern("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.setExposedHeaders(java.util.List.of("X-Tenant-Id", "Content-Type", "Authorization"));
+        config.setMaxAge(3600L);
+
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return new org.springframework.web.filter.CorsFilter(source);
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tenantInterceptor)
@@ -34,8 +48,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD")
                 .allowedHeaders("*")
                 .exposedHeaders("X-Tenant-Id", "Content-Type", "Authorization")
-                .allowCredentials(true)
                 .maxAge(3600);
     }
 }
+
 
