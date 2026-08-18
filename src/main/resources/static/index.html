@@ -1257,11 +1257,51 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
             setBackendUrl(val);
         }
 
+        function markBackendOnline() {
+            isBackendConnected = true;
+            const el = document.getElementById('healthIndicator');
+            if (el) {
+                el.style.display = 'flex';
+                el.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                el.style.color = 'var(--accent-emerald)';
+                el.style.background = 'rgba(16, 185, 129, 0.15)';
+                const dot = el.querySelector('.dot');
+                if (dot) {
+                    dot.style.background = 'var(--accent-emerald)';
+                    dot.style.boxShadow = '0 0 8px var(--accent-emerald)';
+                }
+                document.getElementById('healthText').innerText = 'Backend Connected';
+            }
+            showConnectionBanner(false);
+        }
+
+        function markBackendOffline() {
+            isBackendConnected = false;
+            const el = document.getElementById('healthIndicator');
+            if (el) {
+                el.style.display = 'flex';
+                el.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                el.style.color = 'var(--accent-rose)';
+                el.style.background = 'rgba(239, 68, 68, 0.15)';
+                const dot = el.querySelector('.dot');
+                if (dot) {
+                    dot.style.background = 'var(--accent-rose)';
+                    dot.style.boxShadow = '0 0 8px var(--accent-rose)';
+                }
+                document.getElementById('healthText').innerText = 'Backend Offline';
+            }
+            const isExternalHost = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+            if (isExternalHost && !apiBaseUrl) {
+                showConnectionBanner(true);
+            }
+        }
+
         function setBackendUrl(url) {
             apiBaseUrl = url.trim().replace(/\/+$/, '');
             if (apiBaseUrl) {
                 localStorage.setItem('api_base_url', apiBaseUrl);
                 showToast(`Backend set to: ${apiBaseUrl}`, 'success');
+                showConnectionBanner(false);
             } else {
                 localStorage.removeItem('api_base_url');
                 showToast(`Using default same-origin API`, 'success');
@@ -1371,43 +1411,15 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
                 if (res.ok && contentType.includes('application/json')) {
                     const data = await res.json();
                     if (data.status === 'UP') {
-                        isBackendConnected = true;
-                        const el = document.getElementById('healthIndicator');
-                        if (el) {
-                            el.style.display = 'flex';
-                            el.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-                            el.style.color = 'var(--accent-emerald)';
-                            el.style.background = 'rgba(16, 185, 129, 0.15)';
-                            const dot = el.querySelector('.dot');
-                            if (dot) {
-                                dot.style.background = 'var(--accent-emerald)';
-                                dot.style.boxShadow = '0 0 8px var(--accent-emerald)';
-                            }
-                            document.getElementById('healthText').innerText = 'Backend Connected';
-                        }
-                        showConnectionBanner(false);
+                        markBackendOnline();
                         return;
                     }
                 }
                 throw new Error('Offline');
             } catch (e) {
-                isBackendConnected = false;
-                const el = document.getElementById('healthIndicator');
-                if (el) {
-                    el.style.display = 'flex';
-                    el.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-                    el.style.color = 'var(--accent-rose)';
-                    el.style.background = 'rgba(239, 68, 68, 0.15)';
-                    const dot = el.querySelector('.dot');
-                    if (dot) {
-                        dot.style.background = 'var(--accent-rose)';
-                        dot.style.boxShadow = '0 0 8px var(--accent-rose)';
-                    }
-                    document.getElementById('healthText').innerText = 'Backend Offline';
-                }
-                const isExternalHost = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-                if (isExternalHost && !apiBaseUrl) {
-                    showConnectionBanner(true);
+                // If APIs are already working, do not override with offline
+                if (!isBackendConnected) {
+                    markBackendOffline();
                 }
             }
         }
@@ -1421,6 +1433,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         async function loadEndpoints() {
             try {
                 const endpoints = await safeFetchJson('/api/v1/endpoints');
+                markBackendOnline();
                 
                 document.getElementById('statsEndpointsCount').innerText = endpoints.length;
                 const tbody = document.getElementById('endpointsTableBody');
