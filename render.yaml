@@ -41,4 +41,4 @@ databases:
     plan: free
     region: oregon
     databaseName: webhooks
-    user: postgres
+    user: webhook_user
