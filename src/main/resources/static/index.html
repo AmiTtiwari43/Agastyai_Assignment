@@ -774,15 +774,19 @@
             </div>
         </div>
 
-        <div class="header-controls">
+            <div class="tenant-selector" title="Backend API Server URL (leave empty for same-origin, or enter your Render URL when hosting frontend on Netlify)">
+                <label for="apiUrlInput">Backend URL:</label>
+                <input type="text" id="apiUrlInput" value="" onchange="onApiUrlChanged()" placeholder="Self (Render/Local)" style="width: 160px;">
+            </div>
+
             <div class="tenant-selector" title="Company / Tenant workspace (X-Tenant-Id header)">
-                <label for="tenantInput">Company / Workspace:</label>
+                <label for="tenantInput">Workspace:</label>
                 <input type="text" id="tenantInput" value="acme-corp" onchange="onTenantChanged()" placeholder="acme-corp">
             </div>
 
-            <div class="badge-pulse" id="healthIndicator">
+            <div class="badge-pulse" id="healthIndicator" style="display:none;">
                 <span class="dot"></span>
-                <span id="healthText">Service Healthy</span>
+                <span id="healthText">Backend Connected</span>
             </div>
 
             <a href="/swagger-ui/index.html" target="_blank" class="nav-link-btn" id="swaggerLink">
@@ -1175,14 +1179,50 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
     <script>
         // State
         let currentTenant = localStorage.getItem('tenant_id') || 'acme-corp';
+        let apiBaseUrl = localStorage.getItem('api_base_url') || '';
+        
         document.getElementById('tenantInput').value = currentTenant;
+        if (document.getElementById('apiUrlInput')) {
+            document.getElementById('apiUrlInput').value = apiBaseUrl;
+        }
+
+        function apiUrl(path) {
+            if (!apiBaseUrl) return path;
+            const base = apiBaseUrl.trim().replace(/\/+$/, '');
+            return `${base}${path.startsWith('/') ? path : '/' + path}`;
+        }
+
+        function onApiUrlChanged() {
+            const input = document.getElementById('apiUrlInput');
+            const val = input ? input.value.trim() : '';
+            apiBaseUrl = val;
+            if (val) {
+                localStorage.setItem('api_base_url', val);
+                showToast(`API Server configured: ${val}`, 'success');
+            } else {
+                localStorage.removeItem('api_base_url');
+                showToast(`Using default same-origin API`, 'success');
+            }
+            updateExternalLinks();
+            checkHealth();
+            loadAll();
+        }
+
+        function updateExternalLinks() {
+            const swaggerLink = document.getElementById('swaggerLink');
+            const metricsLink = document.getElementById('metricsLink');
+            if (swaggerLink) swaggerLink.href = apiUrl('/swagger-ui/index.html');
+            if (metricsLink) metricsLink.href = apiUrl('/actuator/prometheus');
+        }
 
         // Init
         document.addEventListener('DOMContentLoaded', () => {
+            updateExternalLinks();
             generateIdempotencyKey();
             loadAll();
             setInterval(loadDeliveries, 3000); // Auto-refresh deliveries every 3s
             checkHealth();
+            setInterval(checkHealth, 10000);
         });
 
         function getHeaders() {
@@ -1246,10 +1286,11 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
 
         async function checkHealth() {
             try {
-                const res = await fetch('/actuator/health');
+                const res = await fetch(apiUrl('/actuator/health'));
                 const data = await res.json();
                 if (data.status === 'UP') {
-                    document.getElementById('healthIndicator').style.display = 'flex';
+                    const el = document.getElementById('healthIndicator');
+                    if (el) el.style.display = 'flex';
                 }
             } catch (e) {
                 console.log('Health check offline');
@@ -1264,7 +1305,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         // 1. Endpoints API
         async function loadEndpoints() {
             try {
-                const res = await fetch('/api/v1/endpoints', { headers: getHeaders() });
+                const res = await fetch(apiUrl('/api/v1/endpoints'), { headers: getHeaders() });
                 if (!res.ok) throw new Error('Failed to load endpoints');
                 const endpoints = await res.json();
                 
@@ -1309,7 +1350,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
             const eventTypes = document.getElementById('eventTypes').value.split(',').map(s => s.trim()).filter(Boolean);
 
             try {
-                const res = await fetch('/api/v1/endpoints', {
+                const res = await fetch(apiUrl('/api/v1/endpoints'), {
                     method: 'POST',
                     headers: getHeaders(),
                     body: JSON.stringify({ url, subscribedEventTypes: eventTypes })
@@ -1332,7 +1373,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         async function deleteEndpoint(id) {
             if (!confirm('Are you sure you want to deactivate this webhook receiver?')) return;
             try {
-                const res = await fetch(`/api/v1/endpoints/${id}`, {
+                const res = await fetch(apiUrl(`/api/v1/endpoints/${id}`), {
                     method: 'DELETE',
                     headers: getHeaders()
                 });
@@ -1359,7 +1400,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
             }
 
             try {
-                const res = await fetch('/api/v1/events', {
+                const res = await fetch(apiUrl('/api/v1/events'), {
                     method: 'POST',
                     headers: getHeaders(),
                     body: JSON.stringify({ eventId: eventIdExternal, type: eventType, payload })
@@ -1385,7 +1426,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         // 3. Deliveries & Redrive API
         async function loadDeliveries() {
             try {
-                const epRes = await fetch('/api/v1/endpoints', { headers: getHeaders() });
+                const epRes = await fetch(apiUrl('/api/v1/endpoints'), { headers: getHeaders() });
                 if (!epRes.ok) return;
                 const endpoints = await epRes.json();
                 
@@ -1394,7 +1435,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
                 let deadLetterCount = 0;
 
                 for (const ep of endpoints) {
-                    const dRes = await fetch(`/api/v1/endpoints/${ep.id}/deliveries?size=50`, { headers: getHeaders() });
+                    const dRes = await fetch(apiUrl(`/api/v1/endpoints/${ep.id}/deliveries?size=50`), { headers: getHeaders() });
                     if (dRes.ok) {
                         const dPage = await dRes.json();
                         const items = dPage.content || [];
@@ -1459,7 +1500,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
 
         async function redriveDelivery(id) {
             try {
-                const res = await fetch(`/api/v1/deliveries/${id}/redrive`, {
+                const res = await fetch(apiUrl(`/api/v1/deliveries/${id}/redrive`), {
                     method: 'POST',
                     headers: getHeaders()
                 });
@@ -1499,7 +1540,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         // Quick helper actions for interactive guide
         async function quickRegisterTestEndpoint() {
             try {
-                const res = await fetch('/api/v1/endpoints', {
+                const res = await fetch(apiUrl('/api/v1/endpoints'), {
                     method: 'POST',
                     headers: getHeaders(),
                     body: JSON.stringify({
@@ -1522,7 +1563,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         async function quickPublishTestEvent() {
             try {
                 const eventId = 'evt_' + Math.random().toString(36).substring(2, 8);
-                const res = await fetch('/api/v1/events', {
+                const res = await fetch(apiUrl('/api/v1/events'), {
                     method: 'POST',
                     headers: getHeaders(),
                     body: JSON.stringify({
@@ -1545,7 +1586,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         async function runOneClickDemo() {
             showToast('🚀 Running 1-Click Interactive Demo...', 'success');
             // 1. Ensure receiver exists
-            await fetch('/api/v1/endpoints', {
+            await fetch(apiUrl('/api/v1/endpoints'), {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify({
@@ -1556,7 +1597,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
 
             // 2. Ingest event
             const eventId = 'demo_' + Date.now().toString(36);
-            await fetch('/api/v1/events', {
+            await fetch(apiUrl('/api/v1/events'), {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify({

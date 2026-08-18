@@ -1,0 +1,44 @@
+services:
+  # 1. Spring Boot Web Service (Webhook Delivery Engine)
+  - type: web
+    name: reliable-webhook-delivery-service
+    runtime: docker
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DB_HOST
+        fromDatabase:
+          name: webhook-postgres-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: webhook-postgres-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: webhook-postgres-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: webhook-postgres-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: webhook-postgres-db
+          property: password
+      - key: ALLOW_INTERNAL_URLS
+        value: "false"
+      - key: DB_POOL_SIZE
+        value: "5"
+      - key: JAVA_TOOL_OPTIONS
+        value: "-XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"
+
+databases:
+  # 2. Managed PostgreSQL Database
+  - name: webhook-postgres-db
+    plan: free
+    region: oregon
+    databaseName: webhooks
+    user: postgres

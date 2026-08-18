@@ -19,8 +19,8 @@ public class TenantInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String path = request.getRequestURI();
 
-        // Skip non-API paths (actuator, swagger, error)
-        if (!path.startsWith("/api/")) {
+        // Skip non-API paths (actuator, swagger, error) or CORS preflight OPTIONS
+        if (!path.startsWith("/api/") || "OPTIONS".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
 
