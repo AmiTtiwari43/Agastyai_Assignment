@@ -1200,7 +1200,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
     <script>
         // State
         let currentTenant = localStorage.getItem('tenant_id') || 'acme-corp';
-        let apiBaseUrl = localStorage.getItem('api_base_url') || '';
+        let apiBaseUrl = localStorage.getItem('api_base_url') || (window.location.hostname.includes('netlify.app') ? 'https://reliable-webhook-delivery-service.onrender.com' : '');
         let isBackendConnected = false;
         
         document.getElementById('tenantInput').value = currentTenant;
