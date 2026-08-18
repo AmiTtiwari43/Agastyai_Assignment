@@ -804,6 +804,27 @@
     <!-- Main Container -->
     <main>
 
+        <!-- Backend Connection Warning Banner (Shown on Netlify if Render backend is not configured) -->
+        <div id="backendConnectionBanner" style="display:none; background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(245, 158, 11, 0.12)); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: var(--radius-lg); padding: 1.25rem 1.75rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(239, 68, 68, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0;">
+                    ⚡
+                </div>
+                <div>
+                    <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff;">Connect to your Render Backend Service</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 3px;">
+                        Frontend is hosted on Netlify. Paste your live Render Web Service URL below to connect:
+                    </p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; width: 100%; max-width: 520px;">
+                <input type="text" id="bannerBackendInput" placeholder="https://reliable-webhook-delivery-service.onrender.com" style="flex: 1; min-width: 260px; background: rgba(10, 14, 23, 0.9); border: 1px solid var(--border-color); color: #fff; padding: 10px 14px; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.85rem; outline: none;">
+                <button class="btn-success" onclick="connectBackendFromBanner()" style="padding: 10px 20px; white-space: nowrap;">
+                    Connect Live
+                </button>
+            </div>
+        </div>
+
         <!-- Quick Interactive Demo Banner -->
         <div class="tutorial-banner">
             <div class="tutorial-banner-text">
@@ -1180,10 +1201,14 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         // State
         let currentTenant = localStorage.getItem('tenant_id') || 'acme-corp';
         let apiBaseUrl = localStorage.getItem('api_base_url') || '';
+        let isBackendConnected = false;
         
         document.getElementById('tenantInput').value = currentTenant;
         if (document.getElementById('apiUrlInput')) {
             document.getElementById('apiUrlInput').value = apiBaseUrl;
+        }
+        if (document.getElementById('bannerBackendInput')) {
+            document.getElementById('bannerBackendInput').value = apiBaseUrl;
         }
 
         function apiUrl(path) {
@@ -1192,17 +1217,58 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
             return `${base}${path.startsWith('/') ? path : '/' + path}`;
         }
 
+        // Robust Fetch Wrapper that gracefully handles non-JSON / HTML / Netlify static fallbacks
+        async function safeFetchJson(path, options = {}) {
+            const url = apiUrl(path);
+            const headers = { ...getHeaders(), ...(options.headers || {}) };
+            const res = await fetch(url, { ...options, headers });
+            
+            const contentType = res.headers.get('content-type') || '';
+            
+            // If the response is HTML or not JSON (e.g. Netlify fallback), throw friendly error
+            if (!contentType.includes('application/json')) {
+                if (contentType.includes('text/html') || res.status === 404) {
+                    throw new Error('BACKEND_NOT_REACHABLE');
+                }
+                const text = await res.text();
+                throw new Error(`Invalid response (${res.status}): ${text.substring(0, 80)}`);
+            }
+
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.message || `Request failed with HTTP ${res.status}`);
+            }
+            return data;
+        }
+
         function onApiUrlChanged() {
             const input = document.getElementById('apiUrlInput');
             const val = input ? input.value.trim() : '';
-            apiBaseUrl = val;
-            if (val) {
-                localStorage.setItem('api_base_url', val);
-                showToast(`API Server configured: ${val}`, 'success');
+            setBackendUrl(val);
+        }
+
+        function connectBackendFromBanner() {
+            const input = document.getElementById('bannerBackendInput');
+            const val = input ? input.value.trim() : '';
+            if (!val) {
+                showToast('Please enter your Render service URL', 'error');
+                return;
+            }
+            setBackendUrl(val);
+        }
+
+        function setBackendUrl(url) {
+            apiBaseUrl = url.trim().replace(/\/+$/, '');
+            if (apiBaseUrl) {
+                localStorage.setItem('api_base_url', apiBaseUrl);
+                showToast(`Backend set to: ${apiBaseUrl}`, 'success');
             } else {
                 localStorage.removeItem('api_base_url');
                 showToast(`Using default same-origin API`, 'success');
             }
+            if (document.getElementById('apiUrlInput')) document.getElementById('apiUrlInput').value = apiBaseUrl;
+            if (document.getElementById('bannerBackendInput')) document.getElementById('bannerBackendInput').value = apiBaseUrl;
+            
             updateExternalLinks();
             checkHealth();
             loadAll();
@@ -1219,11 +1285,23 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         document.addEventListener('DOMContentLoaded', () => {
             updateExternalLinks();
             generateIdempotencyKey();
-            loadAll();
-            setInterval(loadDeliveries, 3000); // Auto-refresh deliveries every 3s
+            
+            // If running on Netlify or custom host and no URL is set, show connection banner
+            const isExternalHost = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+            if (isExternalHost && !apiBaseUrl) {
+                showConnectionBanner(true);
+            }
+
             checkHealth();
-            setInterval(checkHealth, 10000);
+            loadAll();
+            setInterval(loadDeliveries, 3000);
+            setInterval(checkHealth, 8000);
         });
+
+        function showConnectionBanner(show) {
+            const banner = document.getElementById('backendConnectionBanner');
+            if (banner) banner.style.display = show ? 'flex' : 'none';
+        }
 
         function getHeaders() {
             return {
@@ -1286,14 +1364,38 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
 
         async function checkHealth() {
             try {
-                const res = await fetch(apiUrl('/actuator/health'));
-                const data = await res.json();
-                if (data.status === 'UP') {
-                    const el = document.getElementById('healthIndicator');
-                    if (el) el.style.display = 'flex';
+                const url = apiUrl('/actuator/health');
+                const res = await fetch(url);
+                const contentType = res.headers.get('content-type') || '';
+                
+                if (res.ok && contentType.includes('application/json')) {
+                    const data = await res.json();
+                    if (data.status === 'UP') {
+                        isBackendConnected = true;
+                        const el = document.getElementById('healthIndicator');
+                        if (el) {
+                            el.style.display = 'flex';
+                            document.getElementById('healthText').innerText = 'Backend Connected';
+                        }
+                        showConnectionBanner(false);
+                        return;
+                    }
                 }
+                throw new Error('Offline');
             } catch (e) {
-                console.log('Health check offline');
+                isBackendConnected = false;
+                const el = document.getElementById('healthIndicator');
+                if (el) {
+                    el.style.display = 'flex';
+                    el.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                    el.style.color = 'var(--accent-rose)';
+                    el.style.background = 'rgba(239, 68, 68, 0.15)';
+                    document.getElementById('healthText').innerText = 'Backend Offline';
+                }
+                const isExternalHost = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+                if (isExternalHost && !apiBaseUrl) {
+                    showConnectionBanner(true);
+                }
             }
         }
 
@@ -1305,9 +1407,7 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         // 1. Endpoints API
         async function loadEndpoints() {
             try {
-                const res = await fetch(apiUrl('/api/v1/endpoints'), { headers: getHeaders() });
-                if (!res.ok) throw new Error('Failed to load endpoints');
-                const endpoints = await res.json();
+                const endpoints = await safeFetchJson('/api/v1/endpoints');
                 
                 document.getElementById('statsEndpointsCount').innerText = endpoints.length;
                 const tbody = document.getElementById('endpointsTableBody');
@@ -1340,7 +1440,10 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
                     </tr>
                 `).join('');
             } catch (e) {
-                console.error(e);
+                if (e.message === 'BACKEND_NOT_REACHABLE') {
+                    const tbody = document.getElementById('endpointsTableBody');
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--accent-amber); padding: 2rem;">⚡ Connect to your Render backend above to load webhook endpoints.</td></tr>`;
+                }
             }
         }
 
@@ -1350,38 +1453,29 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
             const eventTypes = document.getElementById('eventTypes').value.split(',').map(s => s.trim()).filter(Boolean);
 
             try {
-                const res = await fetch(apiUrl('/api/v1/endpoints'), {
+                const created = await safeFetchJson('/api/v1/endpoints', {
                     method: 'POST',
-                    headers: getHeaders(),
                     body: JSON.stringify({ url, subscribedEventTypes: eventTypes })
                 });
 
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.message || 'Validation error');
-                }
-
-                const created = await res.json();
                 showToast(`Webhook receiver added with HMAC secret!`, 'success');
                 document.getElementById('endpointUrl').value = '';
                 loadEndpoints();
             } catch (err) {
-                showToast(`Error: ${err.message}`, 'error');
+                showToast(`Error: ${err.message === 'BACKEND_NOT_REACHABLE' ? 'Please connect your Render backend URL above' : err.message}`, 'error');
             }
         }
 
         async function deleteEndpoint(id) {
             if (!confirm('Are you sure you want to deactivate this webhook receiver?')) return;
             try {
-                const res = await fetch(apiUrl(`/api/v1/endpoints/${id}`), {
-                    method: 'DELETE',
-                    headers: getHeaders()
+                await safeFetchJson(`/api/v1/endpoints/${id}`, {
+                    method: 'DELETE'
                 });
-                if (!res.ok) throw new Error('Failed to delete');
                 showToast('Receiver deactivated', 'success');
                 loadEndpoints();
             } catch (err) {
-                showToast(err.message, 'error');
+                showToast(`Error: ${err.message}`, 'error');
             }
         }
 
@@ -1400,51 +1494,44 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
             }
 
             try {
-                const res = await fetch(apiUrl('/api/v1/events'), {
+                const data = await safeFetchJson('/api/v1/events', {
                     method: 'POST',
-                    headers: getHeaders(),
                     body: JSON.stringify({ eventId: eventIdExternal, type: eventType, payload })
                 });
 
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || 'Ingest failed');
-
-                const statusTxt = res.status === 201 ? 'Fanned out to subscriber deliveries' : 'Idempotent duplicate recognized';
-                showToast(`Event published! (${statusTxt})`, 'success');
+                showToast(`Event published! (Fanned out to deliveries)`, 'success');
 
                 const resultBox = document.getElementById('ingestResultBox');
                 resultBox.style.display = 'block';
-                resultBox.innerHTML = `<strong>Response (${res.status} ${res.statusText}):</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                resultBox.innerHTML = `<strong>Response:</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
 
                 generateIdempotencyKey();
                 loadDeliveries();
             } catch (err) {
-                showToast(`Error: ${err.message}`, 'error');
+                showToast(`Error: ${err.message === 'BACKEND_NOT_REACHABLE' ? 'Please connect your Render backend URL above' : err.message}`, 'error');
             }
         }
 
         // 3. Deliveries & Redrive API
         async function loadDeliveries() {
             try {
-                const epRes = await fetch(apiUrl('/api/v1/endpoints'), { headers: getHeaders() });
-                if (!epRes.ok) return;
-                const endpoints = await epRes.json();
+                const endpoints = await safeFetchJson('/api/v1/endpoints');
+                if (!Array.isArray(endpoints)) return;
                 
                 let allDeliveries = [];
                 let deliveredCount = 0;
                 let deadLetterCount = 0;
 
                 for (const ep of endpoints) {
-                    const dRes = await fetch(apiUrl(`/api/v1/endpoints/${ep.id}/deliveries?size=50`), { headers: getHeaders() });
-                    if (dRes.ok) {
-                        const dPage = await dRes.json();
+                    try {
+                        const dPage = await safeFetchJson(`/api/v1/endpoints/${ep.id}/deliveries?size=50`);
                         const items = dPage.content || [];
                         items.forEach(item => {
                             if (item.status === 'DELIVERED') deliveredCount++;
                             if (item.status === 'DEAD_LETTERED') deadLetterCount++;
                         });
                         allDeliveries = allDeliveries.concat(items);
-                    }
+                    } catch (ignore) {}
                 }
 
                 document.getElementById('statsDeliveredCount').innerText = deliveredCount;
@@ -1494,17 +1581,18 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
                 }).join('');
 
             } catch (e) {
-                console.error(e);
+                if (e.message === 'BACKEND_NOT_REACHABLE') {
+                    const tbody = document.getElementById('deliveriesTableBody');
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--accent-amber); padding: 2rem;">⚡ Connect to your Render backend above to load delivery logs.</td></tr>`;
+                }
             }
         }
 
         async function redriveDelivery(id) {
             try {
-                const res = await fetch(apiUrl(`/api/v1/deliveries/${id}/redrive`), {
-                    method: 'POST',
-                    headers: getHeaders()
+                await safeFetchJson(`/api/v1/deliveries/${id}/redrive`, {
+                    method: 'POST'
                 });
-                if (!res.ok) throw new Error('Redrive failed');
                 showToast('Delivery re-queued for immediate retry!', 'success');
                 loadDeliveries();
             } catch (err) {
@@ -1540,78 +1628,69 @@ def verify_webhook(raw_payload_bytes: bytes, signature_header: str, secret: str)
         // Quick helper actions for interactive guide
         async function quickRegisterTestEndpoint() {
             try {
-                const res = await fetch(apiUrl('/api/v1/endpoints'), {
+                await safeFetchJson('/api/v1/endpoints', {
                     method: 'POST',
-                    headers: getHeaders(),
                     body: JSON.stringify({
                         url: 'https://httpbin.org/post',
                         subscribedEventTypes: ['payment.completed', 'order.created']
                     })
                 });
-                if (res.ok) {
-                    showToast('Registered test receiver (https://httpbin.org/post)!', 'success');
-                    switchTab('endpoints');
-                } else {
-                    const err = await res.json();
-                    showToast(err.message || 'Registration failed', 'error');
-                }
+                showToast('Registered test receiver (https://httpbin.org/post)!', 'success');
+                switchTab('endpoints');
             } catch (e) {
-                showToast(e.message, 'error');
+                showToast(`Error: ${e.message === 'BACKEND_NOT_REACHABLE' ? 'Connect your Render backend first' : e.message}`, 'error');
             }
         }
 
         async function quickPublishTestEvent() {
             try {
                 const eventId = 'evt_' + Math.random().toString(36).substring(2, 8);
-                const res = await fetch(apiUrl('/api/v1/events'), {
+                await safeFetchJson('/api/v1/events', {
                     method: 'POST',
-                    headers: getHeaders(),
                     body: JSON.stringify({
                         eventId: eventId,
                         type: 'payment.completed',
                         payload: { orderId: 'ORD-' + Math.floor(1000 + Math.random() * 9000), amount: 99.50, currency: 'USD' }
                     })
                 });
-                if (res.ok) {
-                    showToast('Sample payment event published!', 'success');
-                    switchTab('deliveries');
-                } else {
-                    showToast('Event publish failed', 'error');
-                }
+                showToast('Sample payment event published!', 'success');
+                switchTab('deliveries');
             } catch (e) {
-                showToast(e.message, 'error');
+                showToast(`Error: ${e.message === 'BACKEND_NOT_REACHABLE' ? 'Connect your Render backend first' : e.message}`, 'error');
             }
         }
 
         async function runOneClickDemo() {
             showToast('🚀 Running 1-Click Interactive Demo...', 'success');
-            // 1. Ensure receiver exists
-            await fetch(apiUrl('/api/v1/endpoints'), {
-                method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify({
-                    url: 'https://httpbin.org/post',
-                    subscribedEventTypes: ['payment.completed', 'order.created']
-                })
-            }).catch(() => {});
+            try {
+                // 1. Ensure receiver exists
+                await safeFetchJson('/api/v1/endpoints', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        url: 'https://httpbin.org/post',
+                        subscribedEventTypes: ['payment.completed', 'order.created']
+                    })
+                }).catch(() => {});
 
-            // 2. Ingest event
-            const eventId = 'demo_' + Date.now().toString(36);
-            await fetch(apiUrl('/api/v1/events'), {
-                method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify({
-                    eventId: eventId,
-                    type: 'payment.completed',
-                    payload: { orderId: 'DEMO-8822', amount: 199.00, customer: 'Jane Doe', status: 'PAID' }
-                })
-            });
+                // 2. Ingest event
+                const eventId = 'demo_' + Date.now().toString(36);
+                await safeFetchJson('/api/v1/events', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        eventId: eventId,
+                        type: 'payment.completed',
+                        payload: { orderId: 'DEMO-8822', amount: 199.00, customer: 'Jane Doe', status: 'PAID' }
+                    })
+                });
 
-            // 3. Switch to deliveries
-            setTimeout(() => {
-                switchTab('deliveries');
-                showToast('Event delivered and recorded in Live Tracker!', 'success');
-            }, 600);
+                // 3. Switch to deliveries
+                setTimeout(() => {
+                    switchTab('deliveries');
+                    showToast('Event delivered and recorded in Live Tracker!', 'success');
+                }, 600);
+            } catch (e) {
+                showToast(`Demo Error: ${e.message === 'BACKEND_NOT_REACHABLE' ? 'Please connect to your Render backend URL above' : e.message}`, 'error');
+            }
         }
 
         // Code snippet switching
